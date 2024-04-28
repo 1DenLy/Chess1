@@ -6,7 +6,7 @@ pygame.init()
 
 
 class knightFigure(mainFigure):
-    def __init__(self, pixelPosition_X: str, pixelPosition_Y: str, imageObjectPath, figureOnBoard: bool =True, figureSelected: bool =False):
-        super().__init__(pixelPosition_X, pixelPosition_Y, imageObjectPath, figureOnBoard, figureSelected)
+    def __init__(self, pixelPosition_X: str, pixelPosition_Y: str, imageObjectPath, player: str, figureOnBoard: bool =True, figureSelected: bool =False):
+        super().__init__(pixelPosition_X, pixelPosition_Y, imageObjectPath, player, figureOnBoard, figureSelected)
 
 
