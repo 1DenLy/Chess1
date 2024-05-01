@@ -10,12 +10,13 @@ class Cell():
         
         self.active = statusCell 
 
-
         self.pixelPosition_X = pixelPosition_X
         self.pixelPosition_Y = pixelPosition_Y
 
         self.rowPosition = rowPosition
         self.colPosition = colPosition
+
+        self.figureOn = None
 
         if cellColor:
             self.cellColor = (210, 210, 210) # WHITE

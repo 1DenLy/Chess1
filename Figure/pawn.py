@@ -11,6 +11,7 @@ class pawnFigure(mainFigure):
 
     def rule(self, players_move: str, list_cell: list, white_list: list, black_list: list):
 
+        print("Rule")
 
         return True
 

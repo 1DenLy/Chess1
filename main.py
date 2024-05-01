@@ -37,8 +37,6 @@ while running:
             Board1.move_figure()
 
 
-
-
     screen.fill((210, 210, 210))  # Clear screen
 
 
