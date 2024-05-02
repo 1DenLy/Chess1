@@ -170,21 +170,26 @@ class Board(object):
 
     def move_figure(self):
 
-        def __move(cell):
+        def __move(cell_start, cell_end):
+
+            cell_start.active = False
+            cell_end.active = True
             
-            self.changed_figure.updatePosition(cell.pixelPosition_X, cell.pixelPosition_Y)
+            self.changed_figure.updatePosition(cell_end.pixelPosition_X, cell_end.pixelPosition_Y)
 
             self.changed_figure = None
             self.move += 1
 
-        def __get_figure(figure_now_clicked, figure_changed, cell_now):
+        def __get_figure(figure_now_clicked, cell_now, temp):
 
             self.figure[0].remove(figure_now_clicked)
 
             if figure_now_clicked in self.figure[1]: self.figure[1].remove(figure_now_clicked)
             elif figure_now_clicked in self.figure[2]: self.figure[2].remove(figure_now_clicked)
 
-            figure_changed.updatePosition(cell_now.pixelPosition_X, cell_now.pixelPosition_Y)
+            self.changed_figure.updatePosition(cell_now.pixelPosition_X, cell_now.pixelPosition_Y)
+
+            temp.active = Falce
 
             self.changed_figure = None
             self.move += 1
@@ -200,18 +205,20 @@ class Board(object):
 
                 # На свою
                 if ( (self.move % 2 == 0) and (figure in self.figure[1]) ) or ( (self.move % 2 != 0) and (figure in self.figure[2]) ):
-                    
+
+                    temp_cell = click_result
+                        
                     self.changed_figure = click_result.figureOn
 
 
                 # На вражескую
                 elif ( (self.move % 2 == 0) and (figure in self.figure[2]) ) or ( (self.move % 2 != 0) and (figure in self.figure[1]) ):
-                    print("enemy")
+                    
                     if self.changed_figure != None:
 
                         if self.changed_figure.rule(list_cell= self.cells, white_list= self.figure[1], black_list=self.figure[2], players_move=self.move) == True:
                             
-                            __get_figure(figure_now_clicked=click_result.figureOn, figure_changed=self.changed_figure, cell_now=click_result)
+                            __get_figure(figure_now_clicked = figure, cell_now=click_result, temp_cell)
 
                         else: self.changed_figure = None
 
@@ -222,7 +229,9 @@ class Board(object):
 
                     if self.changed_figure.rule(list_cell= self.cells, white_list= self.figure[1], black_list=self.figure[2], players_move=self.move) == True:
 
-                        __move(click_result)
+                        __move(temp_cell, click_result)
+
+                        temp_cell = None
 
                     else: self.changed_figure = None
 
