@@ -39,6 +39,7 @@ class Board(object):
         self.figure = self.__create_figure_board()
 
         self.changed_figure = None
+        self.temp_cell = None
 
         Board.__setFiguresCellsActive(self.figure[0], self.cells)
 
@@ -119,11 +120,15 @@ class Board(object):
         pawnsO = [__create_piece(pawnFigure, opponent_color, opponent_pawn_row, col) for col in range(1, 9)]
 
 
-        _WHITELIST  = [kingP, queenP] + bishopsP + knightsP + rooksP + pawnsP
-        _BLACKLIST  = [kingO, queenO] + bishopsO + knightsO + rooksO + pawnsO
+        if self.player == 'WHITE':
+            _WHITELIST  = [kingP, queenP] + bishopsP + knightsP + rooksP + pawnsP
+            _BLACKLIST  = [kingO, queenO] + bishopsO + knightsO + rooksO + pawnsO
+
+        elif self.player == 'BLACK':
+            _WHITELIST = [kingO, queenO] + bishopsO + knightsO + rooksO + pawnsO
+            _BLACKLIST = [kingP, queenP] + bishopsP + knightsP + rooksP + pawnsP
 
         _FULL_LIST  = _WHITELIST + _BLACKLIST
-
 
         return _FULL_LIST, _WHITELIST, _BLACKLIST
 
@@ -159,6 +164,8 @@ class Board(object):
             for cell in self.cells:
 
                 if cell.rect.collidepoint(mouse_position):
+                    print("click -> ", cell.colPosition, cell.rowPosition)
+                    #print(cell.active, "Figure -", cell.figureOn, "\n ------")
 
                     return cell
         
@@ -170,61 +177,72 @@ class Board(object):
 
     def move_figure(self):
 
-        def __move(cell):
-            
-            self.changed_figure.updatePosition(cell.pixelPosition_X, cell.pixelPosition_Y)
+        def __move(cell_start: Cell, cell_end: Cell):
 
-            self.changed_figure = None
-            self.move += 1
+            cell_start.active = False
+            cell_end.active = True
 
-        def __get_figure(figure_now_clicked, figure_changed, cell_now):
+            if isinstance(cell_start.figureOn, pawnFigure): cell_start.figureOn.starting_position_maintained = False
 
-            self.figure[0].remove(figure_now_clicked)
+            elif isinstance(cell_start.figureOn, kingFigure): cell_start.figureOn.starting_position_maintained = False
 
-            if figure_now_clicked in self.figure[1]: self.figure[1].remove(figure_now_clicked)
-            elif figure_now_clicked in self.figure[2]: self.figure[2].remove(figure_now_clicked)
 
-            figure_changed.updatePosition(cell_now.pixelPosition_X, cell_now.pixelPosition_Y)
+            if cell_end.figureOn != None:
 
+                self.figure[0].remove(cell_end.figureOn)
+
+                if cell_end.figureOn in self.figure[1]: self.figure[1].remove(cell_end.figureOn)
+                if cell_end.figureOn in self.figure[2]: self.figure[2].remove(cell_end.figureOn)
+                cell_end.figureOn = None
+
+            self.changed_figure.updatePosition(cell_end.pixelPosition_X, cell_end.pixelPosition_Y)
+            cell_end.figureOn = self.changed_figure
+
+            cell_start.figureOn = None
             self.changed_figure = None
             self.move += 1
 
 
         click_result = self.__click_connection() # <-- Click results in variable
+
         if click_result != None:
 
-            figure = click_result.figureOn
+            figure = click_result.figureOn # <-- Figure
 
 
             if figure != None: # <-- If click figure
 
                 # На свою
                 if ( (self.move % 2 == 0) and (figure in self.figure[1]) ) or ( (self.move % 2 != 0) and (figure in self.figure[2]) ):
-                    
-                    self.changed_figure = click_result.figureOn
 
+                    self.temp_cell = click_result
+                        
+                    self.changed_figure = figure
+
+                    print(self.changed_figure)
 
                 # На вражескую
                 elif ( (self.move % 2 == 0) and (figure in self.figure[2]) ) or ( (self.move % 2 != 0) and (figure in self.figure[1]) ):
-                    print("enemy")
-                    if self.changed_figure != None:
+                    
+                    if (self.changed_figure != None) and self.temp_cell != None:
 
-                        if self.changed_figure.rule(list_cell= self.cells, white_list= self.figure[1], black_list=self.figure[2], players_move=self.move) == True:
-                            
-                            __get_figure(figure_now_clicked=click_result.figureOn, figure_changed=self.changed_figure, cell_now=click_result)
+                        if self.changed_figure.rule(cell_start= self.temp_cell, cell_end = click_result, white_list= self.figure[1], black_list=self.figure[2], cell_list= self.cells):
+                            print("Rule")
+                            __move(cell_start= self.temp_cell, cell_end= click_result)
 
                         else: self.changed_figure = None
-
 
             else:
 
                 if (self.changed_figure != None):
 
-                    if self.changed_figure.rule(list_cell= self.cells, white_list= self.figure[1], black_list=self.figure[2], players_move=self.move) == True:
+                    if self.changed_figure.rule(cell_start= self.temp_cell, cell_end = click_result, white_list= self.figure[1], black_list=self.figure[2], cell_list= self.cells):
 
-                        __move(click_result)
+                        __move(cell_start= self.temp_cell, cell_end= click_result)
 
                     else: self.changed_figure = None
+
+
 
 
 
