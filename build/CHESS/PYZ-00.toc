@@ -1,4 +1,4 @@
-('C:\\Chess\\build\\CHESS\\PYZ-00.pyz',
+('C:\\Chess\\build\\Chess\\PYZ-00.pyz',
  [('Board', 'C:\\Chess\\Board.py', 'PYMODULE'),
   ('Figure', '-', 'PYMODULE'),
   ('Figure.bishop', 'C:\\Chess\\Figure\\bishop.py', 'PYMODULE'),

@@ -45,7 +45,7 @@ class mainFigure:
 
         self.rect = pygame.Rect( self.pixelPosition_X, self.pixelPosition_Y, 80, 80 )
 
-        self.image_object = pygame.transform.scale( pygame.image.load( image_objectPath ).convert_alpha(), (80, 80) )
+        self.image_object = pygame.transform.scale( pygame.image.load( self.image_objectPath ).convert_alpha(), (80, 80) )
 
 
     def __resource_path(relative_path):

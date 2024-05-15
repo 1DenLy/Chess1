@@ -84,7 +84,7 @@ class Board(object):
         def __create_piece(figures_class, color, row, col):
 
             piece_name = 'N' if figures_class == knightFigure else figures_class.__name__[0]
-            image_path = f"./Image/{color[0].lower()}{piece_name.upper()}.svg"
+            image_path = f"Image/{color[0].lower()}{piece_name.upper()}.svg"
 
             return figures_class(
                 pixelPosition_X=col_positions[col-1],  
