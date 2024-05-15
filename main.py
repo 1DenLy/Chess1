@@ -1,11 +1,12 @@
 import sys
 import pygame
+import random
 
 pygame.init()
 
 #Constants
 
-Player = 'WHITE'
+Player = random.choice(['WHITE', 'BLACK'])
 
 WIDTH, HEIGHT = 750, 825 
 FPS = 60
@@ -33,7 +34,6 @@ while running:
             running = False
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
-
             Board1.move_figure()
 
 

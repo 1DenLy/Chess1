@@ -1,4 +1,5 @@
 import pygame
+import sys, os
 
 # Инициализация Pygame
 pygame.init()
@@ -37,14 +38,22 @@ class mainFigure:
 
         self.pixelPosition_X = mainFigure.__currentCellsCoordinates(  num_cell= ( pixelPosition_X + pixelPosition_Y ), dict_coordinate= ( create_cells_coordinates(player) )  )[0]
         self.pixelPosition_Y = mainFigure.__currentCellsCoordinates(  num_cell= ( pixelPosition_X + pixelPosition_Y ), dict_coordinate= ( create_cells_coordinates(player) )  )[1]
-        
-        self.image_objectPath = image_objectPath
+
+        self.image_objectPath = mainFigure.__resource_path(image_objectPath)
 
         self.figureOnBoard = figureOnBoard
 
         self.rect = pygame.Rect( self.pixelPosition_X, self.pixelPosition_Y, 80, 80 )
 
         self.image_object = pygame.transform.scale( pygame.image.load( image_objectPath ).convert_alpha(), (80, 80) )
+
+
+    def __resource_path(relative_path):
+        try:
+            base_path = sys._MEIPASS
+        except Exception:
+            base_path = os.path.abspath(".")
+        return os.path.join(base_path, relative_path)
 
 
     def draw(self, surface: pygame.Surface) -> pygame.Surface:

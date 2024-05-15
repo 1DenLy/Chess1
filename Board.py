@@ -11,6 +11,7 @@ from Figure.pawn import pawnFigure
 from Figure.rook import rookFigure
 
 
+
 pygame.init()
 
 LISTOFNUMBER = ("1", "2", "3", "4", "5", "6", "7", "8")
@@ -83,7 +84,7 @@ class Board(object):
         def __create_piece(figures_class, color, row, col):
 
             piece_name = 'N' if figures_class == knightFigure else figures_class.__name__[0]
-            image_path = f"Figure/Image/{color[0].lower()}{piece_name.lower()}.svg"
+            image_path = f"./Image/{color[0].lower()}{piece_name.upper()}.svg"
 
             return figures_class(
                 pixelPosition_X=col_positions[col-1],  
@@ -164,8 +165,6 @@ class Board(object):
             for cell in self.cells:
 
                 if cell.rect.collidepoint(mouse_position):
-                    print("click -> ", cell.colPosition, cell.rowPosition)
-                    #print(cell.active, "Figure -", cell.figureOn, "\n ------")
 
                     return cell
         
@@ -202,6 +201,8 @@ class Board(object):
             self.changed_figure = None
             self.move += 1
 
+        if self.__kill_king():
+            return False
 
         click_result = self.__click_connection() # <-- Click results in variable
 
@@ -219,15 +220,13 @@ class Board(object):
                         
                     self.changed_figure = figure
 
-                    print(self.changed_figure)
-
                 # На вражескую
                 elif ( (self.move % 2 == 0) and (figure in self.figure[2]) ) or ( (self.move % 2 != 0) and (figure in self.figure[1]) ):
                     
                     if (self.changed_figure != None) and self.temp_cell != None:
 
                         if self.changed_figure.rule(cell_start= self.temp_cell, cell_end = click_result, white_list= self.figure[1], black_list=self.figure[2], cell_list= self.cells):
-                            print("Rule")
+                            
                             __move(cell_start= self.temp_cell, cell_end= click_result)
 
                         else: self.changed_figure = None
@@ -243,12 +242,7 @@ class Board(object):
                     else: self.changed_figure = None
 
 
+    def __kill_king(self):
 
-
-
-
-
-
-
-
+        if sum(1 for king in self.figure[0] if isinstance(king, kingFigure)) < 2: return True
 

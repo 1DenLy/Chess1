@@ -37,12 +37,13 @@ class pawnFigure(mainFigure):
     def rule(self, white_list: list = None, black_list: list = None, cell_start = None, cell_end = None, cell_list: list = None):
         moves_list = []
 
+        # Check list
         used_list = self._determine_which_list(white=white_list, black=black_list)
 
         cell_position = cell_start.colPosition + cell_start.rowPosition
 
+        # Change side of moving
         side_index = -1 if used_list == black_list else 1
-
 
         try:
 
