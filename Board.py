@@ -176,6 +176,31 @@ class Board(object):
 
     def move_figure(self):
 
+
+        def __castling_move(cell_king_start: Cell, cell_rook_start: Cell, cell_king_end: Cell, cell_rook_end: Cell):
+
+            cell_king_end = next((cell for cell in self.cells if cell.colPosition + cell.rowPosition == cell_king_end), cell_king_end)
+            cell_rook_end = next((cell for cell in self.cells if cell.colPosition + cell.rowPosition == cell_rook_end), cell_rook_end)
+
+            cell_king_start.active = False
+            cell_rook_start.active = False
+
+            cell_king_end.active = True
+            cell_rook_end.active = True
+
+            cell_king_start.figureOn.updatePosition(cell_king_end.pixelPosition_X, cell_king_end.pixelPosition_Y)
+            cell_rook_start.figureOn.updatePosition(cell_rook_end.pixelPosition_X, cell_rook_end.pixelPosition_Y)
+
+
+            cell_king_end.figureOn = cell_king_start.figureOn
+            cell_rook_end.figureOn = cell_rook_start.figureOn
+
+            cell_king_start.figureOn = None
+            cell_rook_start.figureOn = None
+
+            self.move += 1
+
+
         def __move(cell_start: Cell, cell_end: Cell):
 
             cell_start.active = False
@@ -201,8 +226,10 @@ class Board(object):
             self.changed_figure = None
             self.move += 1
 
+
         if self.__kill_king():
             return False
+
 
         click_result = self.__click_connection() # <-- Click results in variable
 
@@ -216,14 +243,34 @@ class Board(object):
                 # На свою
                 if ( (self.move % 2 == 0) and (figure in self.figure[1]) ) or ( (self.move % 2 != 0) and (figure in self.figure[2]) ):
 
-                    self.temp_cell = click_result
-                        
-                    self.changed_figure = figure
+                    if isinstance(self.changed_figure, kingFigure) and self.changed_figure.starting_position_maintained:
+
+                        if isinstance(figure, rookFigure) and figure.starting_position_maintained:
+
+                            castling_position = self.changed_figure.check_castling(cell_start= self.temp_cell, cell_end= click_result, cell_list=self.cells)
+                            print(castling_position)
+                            if castling_position == False:
+
+                                self.temp_cell = click_result
+                            
+                                self.changed_figure = figure
+
+                            else:
+                                __castling_move(cell_king_start= self.temp_cell, cell_rook_start= click_result, cell_king_end=castling_position[0], cell_rook_end=castling_position[1])
+
+                                self.changed_figure.starting_position_maintained = False
+                                figure.starting_position_maintained = False
+
+                    else:
+
+                        self.temp_cell = click_result
+                            
+                        self.changed_figure = figure
 
                 # На вражескую
                 elif ( (self.move % 2 == 0) and (figure in self.figure[2]) ) or ( (self.move % 2 != 0) and (figure in self.figure[1]) ):
                     
-                    if (self.changed_figure != None) and self.temp_cell != None:
+                    if (self.changed_figure != None) and (self.temp_cell != None):
 
                         if self.changed_figure.rule(cell_start= self.temp_cell, cell_end = click_result, white_list= self.figure[1], black_list=self.figure[2], cell_list= self.cells):
                             
@@ -233,7 +280,7 @@ class Board(object):
 
             else:
 
-                if (self.changed_figure != None):
+                if self.changed_figure != None:
 
                     if self.changed_figure.rule(cell_start= self.temp_cell, cell_end = click_result, white_list= self.figure[1], black_list=self.figure[2], cell_list= self.cells):
 

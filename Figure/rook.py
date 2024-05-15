@@ -9,6 +9,8 @@ class rookFigure(mainFigure):
     def __init__(self, pixelPosition_X: str, pixelPosition_Y: str, imageObjectPath, player: str, figureOnBoard: bool =True):
         super().__init__(pixelPosition_X, pixelPosition_Y, imageObjectPath, player, figureOnBoard)
 
+        self.starting_position_maintained = True
+
     def rule(self, white_list: list = None, black_list: list = None, cell_start = None, cell_end = None, cell_list: list = None):
 
         def __checking_the_presence_figure_in_position(position: str, list: list) -> bool:
